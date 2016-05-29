@@ -1,0 +1,64 @@
+<div class="alert alert-error" ng-show="error">{{errorMessage}}</div>
+<form class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label" for="inputEmail">Title</label>
+		<div class="controls">
+			<input type="text" id="inputEmail" ng-model="name.title"
+				placeholder="title" required min="2">
+		</div>
+		
+		<label class="control-label" for="inputEmail">News/Article</label>
+		<div class="controls">
+			<textarea rows="8" cols="8" id="inputEmail" ng-model="name.text_content"
+				placeholder="text content" required min="2">
+			</textarea>				
+		</div>
+	</div>
+	<div class="control-group">
+		<hr />
+		<div class="controls">
+			<button type="button" class="btn btn-primary"
+				ng-disabled="!name.title" ng-hide="editMode"
+				ng-disabled="!name.text_content" ng-hide="editMode"
+				ng-click="add(name)">Add News/Article</button>
+			<button type="button" class="btn" ng-click="resetNamesForm()">Reset</button>
+
+		</div>
+	</div>
+</form>
+<hr />
+
+<h3>News | Articles</h3>
+<autocomplete ng-model="search" data="typeaheadNames" on-type="autocompleteNames" on-select="alert(search)"></autocomplete>
+
+<button type="button" class="btn" ng-click="searchNamesList(search)"
+	style="margin-bottom: 10px">Search</button>
+
+<button type="button" style="margin-bottom: 10px" class="btn" ng-click="fetchNamesList()">All</button>
+
+<div class="alert alert-info" ng-show="news.length == 0">No News/Article found</div>
+<table class="table table-bordered table-striped"
+	ng-show="news.length > 0">
+	<thead>
+		<tr>
+			<th style="text-align: center; width: 25px;">Id</th>
+			<th style="text-align: center;">Title</th>
+			<th style="text-align: center;">News Article</th>
+			<th style="text-align: center;">Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="name in news | orderBy:predicate">
+			<td style="text-align: center;">{{name.id}}</td>
+			<td>{{name.title}}</td>
+			<td>{{name.text_content}}</td>
+			<td style="width: 100px; text-align: center;">
+				<button class="btn btn-mini btn-danger"
+					ng-click="removeName(name.id)">Remove</button>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<button class="btn btn-danger"
+	ng-show="news.length > 1 && search.length == 0"
+	ng-click="removeAllNames()">Remove All Names</button>
