@@ -1,22 +1,22 @@
 <div class="alert alert-error" ng-show="error">{{errorMessage}}</div>
+
 <form class="form-horizontal">
-	<div class="control-group">
-		<label class="control-label" for="inputEmail">Title</label>
-		<div class="controls">
-			<input type="text" id="inputEmail" ng-model="name.title"
-				placeholder="title" required min="2">
+
+	<div class="form-group">
+		<label for="inputTitle" class="col-sm-2 control-label">Title:</label>
+		<div class="col-sm-10">
+			<input id="name.title" ng-model="name.title" type="text" class="form-control" />
 		</div>
-		
-		<label class="control-label" for="inputEmail">News/Article</label>
-		<div class="controls">
-			<textarea rows="8" cols="8" id="inputEmail" ng-model="name.text_content"
-				placeholder="text content" required min="2">
-			</textarea>				
+	
+		<label class="col-sm-2 control-label" for="inputContent">News/Article</label>
+		<div class="col-sm-10">
+			<textarea rows="10" id="name.text_content" ng-model="name.text_content" class="form-control"></textarea>				
 		</div>
 	</div>
-	<div class="control-group">
+	
+	<div class="form-group">
 		<hr />
-		<div class="controls">
+		<div class="col-sm-10 col-sm-offset-2">
 			<button type="button" class="btn btn-primary"
 				ng-disabled="!name.title" ng-hide="editMode"
 				ng-disabled="!name.text_content" ng-hide="editMode"

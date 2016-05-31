@@ -10,26 +10,26 @@ import java.util.Date;
  */
 @SolrDocument(solrCoreName = "news")
 public class NewsArticle {
-    public NewsArticle() {
-    }
+	public NewsArticle() {
+	}
 
-    public NewsArticle(NewsArticle from) {
-        this.id = from.id;
-        this.title = from.title;
-        this.text_content = from.text_content;
-        this.createdTimestamp = from.createdTimestamp;
-    }
+	public NewsArticle(NewsArticle from) {
+		this.id = from.id;
+		this.title = from.title;
+		this.text_content = from.text_content;
+		this.createdTimestamp = from.createdTimestamp;
+	}
 
-    @Indexed
-    private Long id;
+	@Indexed
+	private Long id;
 
-    @Indexed
-    private String title;
+	@Indexed
+	private String title;
 
-    @Indexed
-    private String text_content;
+	@Indexed
+	private String text_content;
 
-    private Date createdTimestamp;
+	private Date createdTimestamp;
 
 	public Long getId() {
 		return id;

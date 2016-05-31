@@ -2,7 +2,6 @@ package com.news.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +40,12 @@ public class NewsArticleController {
 
     @RequestMapping(value = "/search.json", method = RequestMethod.POST)
     @ResponseBody
-    public List<NewsArticle> doSearch(@RequestBody LinkedHashMap<String, Object> data) {
-    	String text = (String) data.get("text");
+    public List<NewsArticle> doSearch(@RequestBody String text) {
         if (StringUtils.isEmpty(text) || solrTemplate == null) {
             return this.getList();
         }
-        
-        int endStr = text.indexOf(" ")-1 >0 ? text.indexOf(" "): text.length();
-        
-        String queryString = String.format("title:%s", text.substring(0, endStr));//Get only the first word
-        Boolean onSelectNewsArticle = (Boolean) data.get("onSelectNewsArticle");
-        if(!onSelectNewsArticle)
-        	queryString = String.format("title:*%s* OR text_content:*%s*", text, text);//Get all
-        
+
+        String queryString = String.format("title:*%s* OR text_content:*%s*", text, text);
         Query query = new SimpleQuery(new SimpleStringCriteria(queryString));
         return solrTemplate.queryForPage(query, NewsArticle.class).getContent();
     }

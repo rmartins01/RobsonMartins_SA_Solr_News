@@ -90,7 +90,6 @@ app.directive('autocomplete', function() {
         }
         watching = false;
         $scope.completing = false;
-        onSelectNewsArticle = true;
         setTimeout(function(){watching = true;},1000);
         $scope.setIndex(-1);
       };

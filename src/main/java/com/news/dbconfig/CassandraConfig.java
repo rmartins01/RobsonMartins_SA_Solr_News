@@ -27,88 +27,86 @@ import java.util.regex.Pattern;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class CassandraConfig {
-    public static final String CASSANDRA_URL = "cassandra_url";
+	public static final String CASSANDRA_URL = "cassandra_url";
 
-    private static final Pattern PATTERN = Pattern.compile("^([^:]+):(\\d+)/(\\w+)$");
-    private static final Logger log = LoggerFactory.getLogger(CassandraConfig.class);
+	private static final Pattern PATTERN = Pattern.compile("^([^:]+):(\\d+)/(\\w+)$");
+	private static final Logger log = LoggerFactory.getLogger(CassandraConfig.class);
 
-    @Autowired
-    private Environment env;
+	@Autowired
+	private Environment env;
 
-    private String host;
-    private int port;
-    private String keyspace;
+	private String host;
+	private int port;
+	private String keyspace;
 
-    private Session session;
+	private Session session;
 
-    @Bean
-    public CassandraTemplate cassandraTemplate() {
-        if (!this.isCassandraUrlProvided()) {
-            return null;
-        }
-        Cluster cluster = Cluster.builder().addContactPointsWithPorts(Collections.singletonList(new InetSocketAddress(host, port))).build();
-        session = cluster.connect();
+	@Bean
+	public CassandraTemplate cassandraTemplate() {
+		if (!this.isCassandraUrlProvided()) {
+			return null;
+		}
+		Cluster cluster = Cluster.builder()
+				.addContactPointsWithPorts(Collections.singletonList(new InetSocketAddress(host, port))).build();
+		session = cluster.connect();
 
-        this.recreateDatabase();
+		this.recreateDatabase();
 
-        session.execute("USE " + keyspace);
+		session.execute("USE " + keyspace);
 
-        CassandraTemplate cassandraTemplate = new CassandraTemplate(session);
-        return cassandraTemplate;
-    }
+		CassandraTemplate cassandraTemplate = new CassandraTemplate(session);
+		return cassandraTemplate;
+	}
 
-    protected void recreateDatabase() {
-        boolean needToCreate = true;
-        List<Row> rows = session.execute("select * from system.schema_keyspaces").all();
-        for (Row row : rows) {
-            if (keyspace.equals(row.getString(0))) {
-                needToCreate = false;
-                break;
-            }
-        }
-        
-        if (needToCreate) {
-            session.execute("CREATE KEYSPACE " + keyspace + " with replication = {'class':'SimpleStrategy', 'replication_factor':1}");
-            session.execute("USE " + keyspace);
-            session.execute("CREATE TABLE " + keyspace + ".newsarticlenosql (\n" +
-                    "    objectid text PRIMARY KEY,\n" +
-                    "    id int ,\n" +
-                    "    title text,\n" +
-                    "    text_content text,\n" +
-                    "    createdTimestamp timestamp\n" +
-                    ")");
-            session.execute("CREATE INDEX id_newsarticlenosql ON " + keyspace + ".newsarticlenosql (id)");
-        }
-    }
+	protected void recreateDatabase() {
+		boolean needToCreate = true;
+		List<Row> rows = session.execute("select * from system.schema_keyspaces").all();
+		for (Row row : rows) {
+			if (keyspace.equals(row.getString(0))) {
+				needToCreate = false;
+				break;
+			}
+		}
 
-    @PreDestroy
-    protected void destroy() {
-        if (session != null) {
-            session.close();
-            session = null;
-        }
-    }
+		if (needToCreate) {
+			session.execute("CREATE KEYSPACE " + keyspace
+					+ " with replication = {'class':'SimpleStrategy', 'replication_factor':1}");
+			session.execute("USE " + keyspace);
+			session.execute("CREATE TABLE " + keyspace + ".newsarticlenosql (\n" + "    objectid text PRIMARY KEY,\n"
+					+ "    id int ,\n" + "    title text,\n" + "    text_content text,\n"
+					+ "    createdTimestamp timestamp\n" + ")");
+			session.execute("CREATE INDEX id_newsarticlenosql ON " + keyspace + ".newsarticlenosql (id)");
+		}
+	}
 
-    protected boolean parseConnectionString(String text) {
-        Matcher matcher = PATTERN.matcher(text);
-        if (matcher.find()) {
-            host = matcher.group(1);
-            port = Integer.parseInt(matcher.group(2));
-            keyspace = matcher.group(3);
+	@PreDestroy
+	protected void destroy() {
+		if (session != null) {
+			session.close();
+			session = null;
+		}
+	}
 
-            return true;
-        } else {
-            log.error("Can't parse cassandra_url: " + text);
-            return false;
-        }
-    }
+	protected boolean parseConnectionString(String text) {
+		Matcher matcher = PATTERN.matcher(text);
+		if (matcher.find()) {
+			host = matcher.group(1);
+			port = Integer.parseInt(matcher.group(2));
+			keyspace = matcher.group(3);
 
-    public boolean isCassandraUrlProvided() {
-        String url = env.getProperty(CASSANDRA_URL);
-        if (url == null || !this.parseConnectionString(url)) {
-            return false;
-        }
+			return true;
+		} else {
+			log.error("Can't parse cassandra_url: " + text);
+			return false;
+		}
+	}
 
-        return true;
-    }
+	public boolean isCassandraUrlProvided() {
+		String url = env.getProperty(CASSANDRA_URL);
+		if (url == null || !this.parseConnectionString(url)) {
+			return false;
+		}
+
+		return true;
+	}
 }

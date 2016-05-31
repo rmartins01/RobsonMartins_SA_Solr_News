@@ -1,0 +1,3 @@
+var news = {
+	useAuthTokenHeader: true 	
+};

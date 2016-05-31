@@ -2,7 +2,7 @@
 
 /* Filters */
 
-var AppFilters = angular.module('AngularSpringApp.filters', []);
+var AppFilters = angular.module('newsApp.filters', []);
 
 AppFilters.filter('interpolate', ['version', function (version) {
     return function (text) {

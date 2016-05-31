@@ -18,74 +18,75 @@ import com.news.model.NewsArticleNoSQL;
  * @author Robson Martins
  */
 public class NewsArticleServiceCassandra implements NewsArticleService {
-    @Autowired
-    private CassandraTemplate cassandraTemplate;
+	@Autowired
+	private CassandraTemplate cassandraTemplate;
 
-    private AtomicLong nextId = new AtomicLong(1);
+	private AtomicLong nextId = new AtomicLong(1);
 
-    @Override
-    public List<NewsArticle> getAllRows() {
-        List<NewsArticle> result = new ArrayList<NewsArticle>();
-        result.addAll(cassandraTemplate.selectAll(NewsArticleNoSQL.class));
+	@Override
+	public List<NewsArticle> getAllRows() {
+		List<NewsArticle> result = new ArrayList<NewsArticle>();
+		result.addAll(cassandraTemplate.selectAll(NewsArticleNoSQL.class));
 
-        for (NewsArticle obj : result) {
-            while (obj.getId() > nextId.longValue()) {
-                nextId.compareAndSet(nextId.longValue(), obj.getId());
-            }
-        }
+		for (NewsArticle obj : result) {
+			while (obj.getId() > nextId.longValue()) {
+				nextId.compareAndSet(nextId.longValue(), obj.getId());
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public NewsArticleNoSQL getById(Long id) {
-        Select select = QueryBuilder.select().from(NewsArticleNoSQL.class.getSimpleName());
-        select.where(QueryBuilder.eq("id", id));
-        NewsArticleNoSQL from = cassandraTemplate.selectOne(select, NewsArticleNoSQL.class);
-        return new NewsArticleNoSQL(from);
-    }
+	@Override
+	public NewsArticleNoSQL getById(Long id) {
+		Select select = QueryBuilder.select().from(NewsArticleNoSQL.class.getSimpleName());
+		select.where(QueryBuilder.eq("id", id));
+		NewsArticleNoSQL from = cassandraTemplate.selectOne(select, NewsArticleNoSQL.class);
+		return new NewsArticleNoSQL(from);
+	}
 
-    public Long add(NewsArticle nd) {
-    	NewsArticleNoSQL obj = new NewsArticleNoSQL();
-    	obj.setId(nd.getId());
-    	obj.setTitle(nd.getTitle());
-    	obj.setText_content(nd.getText_content());
-    	obj.setCreatedTimestamp(nd.getCreatedTimestamp());
-    	return add((obj));
-    }
-    @Override
-    public Long add(NewsArticleNoSQL nd) {
-        this.getAllRows();
+	public Long add(NewsArticle nd) {
+		NewsArticleNoSQL obj = new NewsArticleNoSQL();
+		obj.setId(nd.getId());
+		obj.setTitle(nd.getTitle());
+		obj.setText_content(nd.getText_content());
+		obj.setCreatedTimestamp(nd.getCreatedTimestamp());
+		return add((obj));
+	}
 
-        NewsArticleNoSQL item = new NewsArticleNoSQL(nd);
+	@Override
+	public Long add(NewsArticleNoSQL nd) {
+		this.getAllRows();
 
-        Long id = this.getNextSequence();
-        Date createdTimestamp = new Date();
+		NewsArticleNoSQL item = new NewsArticleNoSQL(nd);
 
-        item.setId(id);
-        item.setObjectId(UUID.randomUUID().toString());
-        item.setCreatedTimestamp(createdTimestamp);
+		Long id = this.getNextSequence();
+		Date createdTimestamp = new Date();
 
-        nd.setId(id);
-        nd.setCreatedTimestamp(createdTimestamp);
+		item.setId(id);
+		item.setObjectId(UUID.randomUUID().toString());
+		item.setCreatedTimestamp(createdTimestamp);
 
-        cassandraTemplate.insert(item);
+		nd.setId(id);
+		nd.setCreatedTimestamp(createdTimestamp);
 
-        return id;
-    }
+		cassandraTemplate.insert(item);
 
-    @Override
-    public void deleteById(Long id) {
-    	NewsArticleNoSQL item = this.getById(id);
-        cassandraTemplate.delete(item);
-    }
+		return id;
+	}
 
-    @Override
-    public void deleteAll() {
-        cassandraTemplate.deleteAll(NewsArticleNoSQL.class);
-    }
+	@Override
+	public void deleteById(Long id) {
+		NewsArticleNoSQL item = this.getById(id);
+		cassandraTemplate.delete(item);
+	}
 
-    private Long getNextSequence() {
-        return nextId.incrementAndGet();
-    }
+	@Override
+	public void deleteAll() {
+		cassandraTemplate.deleteAll(NewsArticleNoSQL.class);
+	}
+
+	private Long getNextSequence() {
+		return nextId.incrementAndGet();
+	}
 }

@@ -12,16 +12,11 @@ var NewsArticleController = function($scope, $http) {
     };
 
     $scope.searchNamesList = function(text) {
-        var data = {
-        	text: text,
-            onSelectNewsArticle: onSelectNewsArticle
-        };
         
-        $http.post('news/search.json', data).success(function(list){
+        $http.post('news/search.json', text).success(function(list){
             $scope.news = list;
         });
         
-        onSelectNewsArticle = false;
     };
 
     $scope.autocompleteNames = function(text){

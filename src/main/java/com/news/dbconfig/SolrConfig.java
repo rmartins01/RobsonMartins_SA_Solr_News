@@ -12,38 +12,38 @@ import org.springframework.data.solr.server.support.HttpSolrServerFactoryBean;
  */
 @Configuration
 public class SolrConfig {
-    public static final String SOLR_HOST = "solr_host";
-    public static final String SOLR_PORT = "solr_port";
+	public static final String SOLR_HOST = "solr_host";
+	public static final String SOLR_PORT = "solr_port";
 
-    @Autowired
-    private Environment env;
+	@Autowired
+	private Environment env;
 
-    private String solrHost;
-    private int solrPort;
+	private String solrHost;
+	private int solrPort;
 
-    @Bean
-    public HttpSolrServerFactoryBean solrServerFactoryBean() {
-        HttpSolrServerFactoryBean factory = new HttpSolrServerFactoryBean();
+	@Bean
+	public HttpSolrServerFactoryBean solrServerFactoryBean() {
+		HttpSolrServerFactoryBean factory = new HttpSolrServerFactoryBean();
 
-        factory.setUrl(this.getSolrUrl());
+		factory.setUrl(this.getSolrUrl());
 
-        return factory;
-    }
+		return factory;
+	}
 
-    @Bean
-    public SolrTemplate solrTemplate() throws Exception {
-        solrHost = env.getProperty(SOLR_HOST);
-        solrPort = Integer.parseInt(env.getProperty(SOLR_PORT, "8983"));
+	@Bean
+	public SolrTemplate solrTemplate() throws Exception {
+		solrHost = env.getProperty(SOLR_HOST);
+		solrPort = Integer.parseInt(env.getProperty(SOLR_PORT, "8983"));
 
-        if (solrHost == null) {
-            return null;
-        }
+		if (solrHost == null) {
+			return null;
+		}
 
-        return new SolrTemplate(solrServerFactoryBean().getObject());
-    }
+		return new SolrTemplate(solrServerFactoryBean().getObject());
+	}
 
-    protected String getSolrUrl() {
-        return String.format("http://%s:%d/solr/news/", solrHost, solrPort);
-    }
+	protected String getSolrUrl() {
+		return String.format("http://%s:%d/solr/news/", solrHost, solrPort);
+	}
 
 }

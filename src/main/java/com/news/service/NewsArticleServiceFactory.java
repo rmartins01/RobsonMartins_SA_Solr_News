@@ -8,26 +8,26 @@ import com.news.dbconfig.CassandraConfig;
 /**
  * @author Robson Martins
  * 
- * Factory Pattern
+ *         Factory Pattern
  */
 public class NewsArticleServiceFactory {
-    private static NewsArticleServiceFactory service = new NewsArticleServiceFactory();
+	private static NewsArticleServiceFactory service = new NewsArticleServiceFactory();
 
-    @Autowired
-    private Environment env;
+	@Autowired
+	private Environment env;
 
-    public NewsArticleService createService() {
+	public NewsArticleService createService() {
 
-        if (env.getProperty(CassandraConfig.CASSANDRA_URL) != null) {
-            return new NewsArticleServiceCassandra();
-        }
-        
-        //.. others databases
+		if (env.getProperty(CassandraConfig.CASSANDRA_URL) != null) {
+			return new NewsArticleServiceCassandra();
+		}
 
-        throw new UnsupportedOperationException("Unknown Database Type");
-    }
+		// .. others databases
 
-    public static NewsArticleServiceFactory createFactory() {
-        return service;
-    }
+		throw new UnsupportedOperationException("Unknown Database Type");
+	}
+
+	public static NewsArticleServiceFactory createFactory() {
+		return service;
+	}
 }

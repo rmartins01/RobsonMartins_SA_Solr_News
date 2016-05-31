@@ -10,15 +10,15 @@ import com.news.model.NewsArticleNoSQL;
  */
 public interface NewsArticleService {
 
-    List<NewsArticle> getAllRows();
+	List<NewsArticle> getAllRows();
 
-    NewsArticle getById(Long id);
+	NewsArticle getById(Long id);
 
-    Long add(NewsArticle nd);
-    
-    Long add(NewsArticleNoSQL nd);
+	Long add(NewsArticle nd);
 
-    void deleteById(Long id);
+	Long add(NewsArticleNoSQL nd);
 
-    void deleteAll();
+	void deleteById(Long id);
+
+	void deleteAll();
 }
