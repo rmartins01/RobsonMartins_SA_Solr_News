@@ -18,7 +18,7 @@
     </contributors>
 
     <properties>
-        <spring.version>3.2.15.RELEASE</spring.version>
+        <spring.version>5.2.20.RELEASE</spring.version>
 		<version.org.springframework>3.2.15.RELEASE</version.org.springframework>
 		
 		
